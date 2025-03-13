@@ -108,5 +108,3 @@ En ``Go``, al parecer, no es necesario **declarar la variable**; es decir, no es
 ```
 
 Ya sabe que `app` es una variable instanciada de la clase `New`.
-
-# hello-world-go
