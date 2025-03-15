@@ -14,6 +14,8 @@ func InitConfig() {
 		// Default global path to search for views (can be overriden when calling Render())
 	})
 
+	app.Static("/", "./views")
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		// Render index template
 		return c.Render("index", fiber.Map{})

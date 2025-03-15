@@ -118,8 +118,6 @@ Ya sabe que `app` es una variable instanciada de la clase `New`.
 
 ### 2.3 Estableciendo los ficheros .html como templates
 
-Ya hemos visto que, como con ``express``, podemos servir **ficheros estáticos**, pero dado que, hasta ahora, hemos servido **texto plano**, tenemos que **configurarlo**.
-
 Vamos a aprender varias cosas:
 
 1. A establecer la **configuración inicial** de nuestro servidor de Go.
@@ -149,8 +147,9 @@ Para exportar una función tan solo debemos **declararla con la primera letra en
 
 ### Continuación de 2.3.1
 
-Una de las cosas principales que queremos configurar es, como dijimos anteriormente, la posibilidad de servir **ficheros estáticos**. Pero no queremos generarlos **manualmente**
-con ``go``, sino que queremos que sirva **ficheros ``html``**. 
+Una de las cosas principales que queremos configurar es, como dijimos anteriormente, la posibilidad de servir **ficheros ``.html``**.
+Una de las cosas que podemos configurar es **qué tipo de templates queremos utilizar**. ``Go`` soporta templates como ``.pug``, pero en este caso
+queremos usar ``html``
 
 Al igual que como ocurre con los frameworks de ``React``, ``Vue``, etc, necesitamos "instalar" un package que nos ayude a realizar esta configuración:
 
@@ -207,6 +206,59 @@ func InitConfig() {
 }
 ````
 
+Sin embargo, si hemos añadido css a nuestro fichero ``html``, comprobaremos que **éste no puede ser leído**. Eso es
+porque debemos indicarle a ``Go`` que sirva como estáticos los ficheros que le indiquemos. 
+
+Añadamos la siguiente línea:
+
+``	app.Static("/", "./views") ``
+
+Y así ``Go`` podrá servir los ficheros `.css` y que éstos sean reconocidos.
+
+El fichero final quedaría así:
+
+````
+package config
+
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
+)
+
+func InitConfig() {
+
+	engine := html.New("./views", ".html")
+
+	app := fiber.New(fiber.Config{
+		Views: engine,
+		// Default global path to search for views (can be overriden when calling Render())
+	})
+
+	app.Static("/", "./views")
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		// Render index template
+		return c.Render("index", fiber.Map{})
+	})
+
+	app.Listen(":3000")
+
+}
+````
+
+Solo queda importarlo en nuestro fichero ``main.go``:
+
+````
+package main
+
+import (
+	"hello-world/config"
+)
+
+func main() {
+	config.InitConfig()
+}
+
+````
+
 Levantamos el servidor con la instrucción `go run main.go` y ¡listo!.
-
-
